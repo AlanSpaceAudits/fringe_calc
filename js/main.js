@@ -1,5 +1,5 @@
 import { state, initCanvases, drawStage, drawFringes } from './sim.js';
-import { bindCalculators, bindSliders, buildScenarios, bindPopups, updateReadout, buildPresetTable, bindModal } from './ui.js';
+import { bindCalculators, bindSliders, buildScenarios, bindPopups, updateReadout, buildPresetTable, buildSagnacTable, bindModal } from './ui.js';
 
 initCanvases();
 bindCalculators();
@@ -7,6 +7,7 @@ bindSliders();
 buildScenarios();
 bindPopups();
 buildPresetTable();
+buildSagnacTable();
 bindModal();
 
 let last = performance.now();

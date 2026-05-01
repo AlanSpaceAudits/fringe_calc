@@ -19,6 +19,13 @@ Format:
 - **Change:** Initial single-page calculator + interferometer animation. Forward (v→N) and inverse (N→v) panels. Reference: Michelson & Morley (1887), p. 336.
 - **Revert path:** `git revert b7216e9` (initial commit).
 
+## S003 — Sagnac equation + presets, modal closes on row select
+
+- **Date:** 2026-04-30
+- **Files changed:** `js/scenarios.js`, `js/ui.js`, `js/main.js`, `index.html`, `change_log_serials.md`, `README.md`
+- **Change:** Added Sagnac equation card (forward: A, λ, Ω, θ → ΔN, Δφ, Δt, Δf; inverse: ΔN_obs → Ω) and `🌀` Sagnac preset modal with eight entries: Sagnac 1913, M-G-P 1925, Pogány 1928, Macek-Davis 1963 (first ring laser gyro), Stedman C-II 1993, Schreiber G ring 2009, GINGERino 2017, generic FOG. Each carries A, perimeter, λ, Ω, axis angle (relative to area normal), predicted/observed ΔN, beat frequency at Earth's rotation rate, and citation. Added helpers `sagnacN`, `sagnacOmegaFromN`, `sagnacBeatHz` in `scenarios.js`. Modal-close behavior: clicking any preset row in either modal applies the row and dismisses the modal. Escape key closes both modals.
+- **Revert path:** `git revert <S003 commit>`; tag `v-s000002` is the previous milestone.
+
 ## S002 — MMX preset table, observed-fringe inverse, extra parameters
 
 - **Date:** 2026-04-30

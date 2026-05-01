@@ -38,6 +38,28 @@ derived in Michelson & Morley (1887), *American Journal of Science* 34: 333-345,
   - 2009 Herrmann et al. (rotating optical)
   - 2015 Nagel et al. (rotating sapphire microwave)
 
+## Sagnac equation and presets
+
+The Sagnac effect (rotation interferometers and ring laser gyros) uses a
+different formula and is provided in a separate card and modal.
+
+    ΔN  = 4·A·Ω·cos(θ) / (λ·c)
+    Δφ  = 2π·ΔN
+    Δt  = 4·A·Ω·cos(θ) / c²
+    Δf  = 4·A·Ω·cos(θ) / (λ·L)        (ring-laser beat, L = perimeter)
+
+`A` is the enclosed area, `Ω` is the rotation rate, `θ` is the angle between
+Ω and the area normal. Sagnac preset table includes:
+
+  - 1913 Sagnac (Paris)
+  - 1925 Michelson-Gale-Pearson (Clearing IL, detected Earth rotation)
+  - 1928 Pogány (Budapest)
+  - 1963 Macek & Davis (first ring laser gyroscope, Sperry)
+  - 1993 Stedman C-II ring laser (Canterbury, NZ)
+  - 2009 Schreiber et al. — G ring (Wettzell, Germany)
+  - 2017 GINGERino (Gran Sasso, Italy)
+  - generic fiber-optic gyro (commercial spec)
+
 ## Layout
 
     index.html              page structure

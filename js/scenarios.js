@@ -267,3 +267,141 @@ export function impliedVSigma(p) {
 }
 
 export const SCENARIOS = PRESETS;
+
+// Sagnac-effect presets. Equation: ΔN = 4·A·Ω·cos(θ) / (λ·c),
+// where A = enclosed loop area, Ω = rotation rate, θ = angle between
+// rotation vector and area normal. Equivalently Δφ = (8πAΩ)/(λc) and
+// Δt = 4AΩ/c² and (for ring laser gyros) Δf = 4AΩ/(λ·L) where L is perimeter.
+export const SAGNAC_PRESETS = [
+  {
+    id: 'sag-1913-sagnac',
+    label: 'Sagnac 1913',
+    short: 'Sagnac 1913',
+    year: 1913, location: 'Paris',
+    apparatus: 'rotating optical platform, four mirrors, mercury lamp',
+    A: 0.0860, lam_nm: 530, perim_m: 1.20,
+    omega_rad_s: 12.6, axis_angle_deg: 0,
+    DN_predicted: 0.0259,
+    DN_observed: 0.07, sigma_DN: 0.02,
+    note: 'shift reported on rotation reversal (factor 2 of single-direction)',
+    citation: 'Sagnac, C. R. Acad. Sci. Paris 157, 708-710 and 1410-1413 (1913).'
+  },
+  {
+    id: 'sag-1925-michelson-gale',
+    label: 'Michelson-Gale-Pearson 1925',
+    short: 'M-G-P 1925',
+    year: 1925, location: 'Clearing, Illinois',
+    apparatus: 'evacuated rectangular pipe loop 612 m × 339 m, detecting Earth\'s rotation',
+    A: 207400, lam_nm: 570, perim_m: 1902,
+    omega_rad_s: 7.292e-5, axis_angle_deg: 48.23,
+    DN_predicted: 0.236,
+    DN_observed: 0.230, sigma_DN: 0.005,
+    note: 'horizontal loop; θ = co-latitude (90°-41.77°) so cos(θ)·Ω = Ω·sin(lat) = 4.86e-5 rad/s on the area normal (zenith)',
+    citation: 'Michelson & Gale (with H. G. Pearson), Astrophys. J. 61, 137-145 (1925).'
+  },
+  {
+    id: 'sag-1928-pogany',
+    label: 'Pogány 1928',
+    short: 'Pogány 1928',
+    year: 1928, location: 'Budapest',
+    apparatus: 'refined Sagnac repeat with photographic recording',
+    A: 0.178, lam_nm: 546, perim_m: 1.7,
+    omega_rad_s: 9.4, axis_angle_deg: 0,
+    DN_predicted: 0.0408,
+    DN_observed: 0.0440, sigma_DN: 0.003,
+    note: 'confirmed Sagnac result to ~7%',
+    citation: 'Pogány, Ann. Phys. (Leipzig) 80, 217-231 (1926); 85, 244-256 (1928).'
+  },
+  {
+    id: 'sag-1963-macek-davis',
+    label: 'Macek & Davis 1963',
+    short: 'Macek-Davis 1963',
+    year: 1963, location: 'Sperry Gyroscope, Long Island NY',
+    apparatus: 'first ring laser gyroscope (HeNe active medium, square cavity)',
+    A: 0.0058, lam_nm: 632.8, perim_m: 1.0,
+    omega_rad_s: null, axis_angle_deg: 0,
+    DN_predicted: null,
+    DN_observed: null, sigma_DN: null,
+    Df_per_omega_HzRad: 4 * 0.0058 / (632.8e-9 * 1.0),
+    note: 'beat-frequency device (Δf = 4AΩ/λL); detected lab rotation rates down to Earth rate',
+    citation: 'Macek & Davis, Appl. Phys. Lett. 2, 67-68 (1963).'
+  },
+  {
+    id: 'sag-1993-stedman-c2',
+    label: 'Stedman C-II ring laser',
+    short: 'C-II 1993',
+    year: 1993, location: 'University of Canterbury, NZ',
+    apparatus: 'square HeNe ring laser, sealed Zerodur monolith',
+    A: 0.7493, lam_nm: 632.8, perim_m: 3.477,
+    omega_rad_s: 7.292e-5, axis_angle_deg: 46.4,
+    DN_predicted: null,
+    DN_observed: null, sigma_DN: null,
+    Df_per_omega_HzRad: 4 * 0.7493 / (632.8e-9 * 3.477),
+    f_earth_Hz: 79.4,
+    note: 'continuous detection of Earth rotation; horizontal loop at lat 43.6°S (θ = co-latitude)',
+    citation: 'Stedman, Rep. Prog. Phys. 60, 615-688 (1997).'
+  },
+  {
+    id: 'sag-2009-schreiber-g',
+    label: 'Schreiber et al. — G ring, Wettzell',
+    short: 'G ring 2009',
+    year: 2009, location: 'Geodetic Observatory Wettzell, Germany',
+    apparatus: '4 m × 4 m square HeNe ring laser, Zerodur frame, underground',
+    A: 16.0, lam_nm: 632.8, perim_m: 16.0,
+    omega_rad_s: 7.292e-5, axis_angle_deg: 40.86,
+    DN_predicted: null,
+    DN_observed: null, sigma_DN: null,
+    Df_per_omega_HzRad: 4 * 16.0 / (632.8e-9 * 16.0),
+    f_earth_Hz: 348.5,
+    note: 'large-area RLG; sensitivity ~12 prad/s/√Hz monitors length-of-day variations',
+    citation: 'Schreiber, Klügel, Velikoseltsev, Schlüter, Stedman, Wells, Pure Appl. Geophys. 166, 1485-1498 (2009).'
+  },
+  {
+    id: 'sag-2017-gingerino',
+    label: 'GINGERino — Gran Sasso underground RLG',
+    short: 'GINGERino 2017',
+    year: 2017, location: 'LNGS, Gran Sasso, Italy',
+    apparatus: '3.6 m × 3.6 m square HeNe ring laser at depth 1400 m',
+    A: 13.0, lam_nm: 632.8, perim_m: 14.4,
+    omega_rad_s: 7.292e-5, axis_angle_deg: 47.55,
+    DN_predicted: null,
+    DN_observed: null, sigma_DN: null,
+    Df_per_omega_HzRad: 4 * 13.0 / (632.8e-9 * 14.4),
+    f_earth_Hz: 280.4,
+    note: 'GINGER pathfinder for general-relativity tests of frame dragging via rotation',
+    citation: 'Belfi, Beverini, Bosi, Carelli, Di Virgilio, Maccioni, Ortolan, Stefani, Class. Quantum Grav. 34, 215003 (2017).'
+  },
+  {
+    id: 'sag-fog-typical',
+    label: 'Fiber-optic gyro (typical)',
+    short: 'FOG typical',
+    year: 2020, location: 'commercial inertial navigation',
+    apparatus: 'multi-turn polarization-maintaining fiber coil, integrated optic phase modulator',
+    A: 0.785, lam_nm: 1550, perim_m: 1000,
+    omega_rad_s: 7.292e-5, axis_angle_deg: 0,
+    DN_predicted: null,
+    DN_observed: null, sigma_DN: null,
+    Df_per_omega_HzRad: null,
+    note: 'effective area A_eff = N·πR² = (1000 m / 0.314 m)·π·(0.05)² ≈ 25 m² for 5 cm coil; bias stability ~0.001 °/h',
+    citation: 'Lefèvre, "The Fiber-Optic Gyroscope," 2nd ed., Artech House (2014).'
+  }
+];
+
+export function sagnacN(A, lam_nm, omega_rad_s, axis_angle_deg = 0) {
+  const lam = lam_nm * 1e-9;
+  const projection = Math.cos((axis_angle_deg * Math.PI) / 180);
+  return (4 * A * omega_rad_s * projection) / (lam * C);
+}
+
+export function sagnacOmegaFromN(A, lam_nm, DN, axis_angle_deg = 0) {
+  const lam = lam_nm * 1e-9;
+  const projection = Math.cos((axis_angle_deg * Math.PI) / 180);
+  if (Math.abs(projection) < 1e-12) return Infinity;
+  return (DN * lam * C) / (4 * A * projection);
+}
+
+export function sagnacBeatHz(A, lam_nm, perim_m, omega_rad_s, axis_angle_deg = 0) {
+  const lam = lam_nm * 1e-9;
+  const projection = Math.cos((axis_angle_deg * Math.PI) / 180);
+  return (4 * A * omega_rad_s * projection) / (lam * perim_m);
+}
