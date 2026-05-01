@@ -19,6 +19,13 @@ Format:
 - **Change:** Initial single-page calculator + interferometer animation. Forward (v→N) and inverse (N→v) panels. Reference: Michelson & Morley (1887), p. 336.
 - **Revert path:** `git revert b7216e9` (initial commit).
 
+## S007 — Generalized Sagnac inverse: ΔN_obs → v
+
+- **Date:** 2026-05-01
+- **Files changed:** `index.html`, `js/ui.js`, `change_log_serials.md`
+- **Change:** Added inverse to the Generalized Sagnac (linear) calculator card. New input ΔN_obs, new output v_implied = ΔN·c·λ / (2·Δl·N·cos(θ)). Auto-formats to m/s, mm/s, μm/s, or nm/s based on magnitude. Sanity check: ΔN_obs = 0.00440 with Δl = 4.1 m, λ = 1310 nm → v = 0.2107 m/s (Wang 2004 reported v_max = 0.211 m/s).
+- **Revert path:** `git revert <S007 commit>`; tag `v-s000006` is the previous milestone.
+
 ## S006 — Wang linear-equivalent velocity column on both tables
 
 - **Date:** 2026-05-01

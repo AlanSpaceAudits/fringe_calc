@@ -44,6 +44,18 @@ export function bindCalculators() {
     $('g_DN').textContent    = fmt(DN, 6);
     $('g_dphi').textContent  = fmt(dphi, 5);
     $('g_slope').textContent = fmt(wangSlope(lam), 4);
+    const DNobs = parseFloat($('g_DNobs').value);
+    const cos = Math.cos(th * Math.PI / 180);
+    const vimp = (Math.abs(cos) > 1e-12) ? (DNobs * lam * 1e-9 * C) / (2 * dl * N * cos) : NaN;
+    let unit = '—';
+    if (isFinite(vimp)) {
+      if (Math.abs(vimp) >= 1)        unit = `${vimp.toFixed(4)} m/s`;
+      else if (Math.abs(vimp) >= 1e-3) unit = `${(vimp*1000).toFixed(4)} mm/s`;
+      else if (Math.abs(vimp) >= 1e-6) unit = `${(vimp*1e6).toFixed(4)} μm/s`;
+      else if (Math.abs(vimp) >= 1e-9) unit = `${(vimp*1e9).toFixed(4)} nm/s`;
+      else                             unit = `${vimp.toExponential(3)} m/s`;
+    }
+    $('g_vimp').textContent = unit;
   }
   function sag() {
     const A = parseFloat($('s_A').value);
@@ -67,7 +79,7 @@ export function bindCalculators() {
   ['i_D', 'i_lam', 'i_N', 'i_sN'].forEach(id => $(id).addEventListener('input', inv));
   $('d_dcc').addEventListener('input', dcc);
   ['s_A', 's_lam', 's_om', 's_th', 's_L', 's_DNobs'].forEach(id => $(id).addEventListener('input', sag));
-  ['g_v', 'g_dl', 'g_N', 'g_th', 'g_lam'].forEach(id => $(id).addEventListener('input', gen));
+  ['g_v', 'g_dl', 'g_N', 'g_th', 'g_lam', 'g_DNobs'].forEach(id => $(id).addEventListener('input', gen));
   fwd(); inv(); dcc(); sag(); gen();
 }
 
