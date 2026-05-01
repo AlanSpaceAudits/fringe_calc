@@ -1,0 +1,197 @@
+:root {
+  --bg: #0b0e14;
+  --panel: #141821;
+  --panel2: #1a1f2a;
+  --fg: #d6d9df;
+  --muted: #8a909a;
+  --accent: #ff9a3c;
+  --accent2: #00e5ff;
+  --accent3: #ff5ec4;
+  --good: #6ef38a;
+  --warn: #ffd166;
+  --border: #272c36;
+  --ui-zoom: clamp(0.7, min(calc(100vw / 1440), calc(100vh / 810)), 1.6);
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg); color: var(--fg);
+  font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  height: 100%;
+  overflow: hidden;
+}
+
+#app {
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "view   readout"
+    "view   calc"
+    "ctrl   ctrl";
+  grid-template-columns: 1fr 320px;
+  grid-template-rows: auto 1fr auto auto;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+header {
+  grid-area: header;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; gap: 16px;
+  zoom: var(--ui-zoom);
+}
+header h1 { font-size: 16px; margin: 0; letter-spacing: 0.04em; color: var(--accent); }
+header .sub { color: var(--muted); font-size: 12px; margin: 0; font-family: ui-monospace, monospace; }
+header .info-box { position: relative; margin-left: auto; }
+header .info-btn {
+  background: var(--panel2); color: var(--fg);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 4px 10px; font: inherit; cursor: pointer; font-size: 12px;
+  margin-left: 4px;
+}
+header .info-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.info-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 380px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  z-index: 50;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.info-popup p { margin: 0 0 8px; font-size: 12.5px; color: var(--fg); }
+.info-popup p:last-child { margin-bottom: 0; }
+.info-popup b { color: var(--accent); }
+
+#view {
+  grid-area: view;
+  position: relative;
+  background: #05080f;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#stage { flex: 1; display: block; width: 100%; height: 100%; }
+#fringes { display: block; width: 100%; height: 40px; background: #000; border-top: 1px solid var(--border); }
+
+#readout {
+  grid-area: readout;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 14px;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  zoom: var(--ui-zoom);
+}
+.r-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 8px;
+}
+.r-lbl { color: var(--muted); }
+.r-val { color: var(--fg); text-align: right; }
+.r-lbl.big { color: var(--accent); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+.r-val.big { color: var(--good); font-size: 16px; font-weight: 600; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+.r-phase { margin-top: 10px; }
+.phase-bar {
+  height: 10px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  margin: 4px 0;
+  overflow: hidden;
+}
+#phase-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--accent2), var(--accent3));
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+#calcpanel {
+  grid-area: calc;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  padding: 10px 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  zoom: var(--ui-zoom);
+}
+.calc { background: var(--panel2); border: 1px solid var(--border); border-radius: 4px; padding: 8px 10px; }
+.calc-h { color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+.calc label {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+  font-size: 11px; color: var(--muted);
+  font-family: ui-monospace, monospace;
+}
+.calc input[type="number"] {
+  flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--fg);
+  padding: 3px 6px; border-radius: 3px; font: inherit; font-family: ui-monospace, monospace;
+  width: 0; min-width: 0;
+}
+.calc input[type="number"]:focus { outline: none; border-color: var(--accent); }
+.calc-out { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); font-family: ui-monospace, monospace; color: var(--good); font-size: 12px; }
+
+#ctrl {
+  grid-area: ctrl;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  padding: 8px 14px;
+  zoom: var(--ui-zoom);
+}
+.ctrl-row {
+  display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+  margin-bottom: 6px;
+}
+.ctrl-row:last-child { margin-bottom: 0; }
+.ctrl-row label {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--muted);
+  font-family: ui-monospace, monospace;
+}
+.ctrl-row input[type="range"] { width: 130px; accent-color: var(--accent); vertical-align: middle; }
+.ctrl-row .chk { color: var(--fg); cursor: pointer; }
+.ctrl-row .chk input { accent-color: var(--accent); }
+.pill {
+  display: inline-block; padding: 2px 8px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 999px;
+  font-size: 10.5px; font-family: ui-monospace, monospace; color: var(--accent2);
+  min-width: 78px; text-align: center;
+}
+
+.scenario {
+  background: var(--panel2); color: var(--fg);
+  border: 1px solid var(--border); border-radius: 3px;
+  padding: 5px 10px; font: inherit; font-size: 11px; cursor: pointer;
+  font-family: ui-monospace, monospace;
+}
+.scenario:hover { border-color: var(--accent); color: var(--accent); }
+.scenario.active { background: rgba(255,154,60,0.15); border-color: var(--accent); color: var(--accent); }
+
+@media (max-width: 900px) {
+  #app {
+    grid-template-areas:
+      "header"
+      "view"
+      "readout"
+      "calc"
+      "ctrl";
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 50vh auto auto auto;
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+  #readout, #calcpanel { border-left: none; border-top: 1px solid var(--border); }
+  #calcpanel { grid-template-columns: 1fr; }
+  .info-popup { width: 92vw; right: -8px; }
+}

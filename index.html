@@ -1,690 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Michelson-Morley Fringe / Velocity Calculator</title>
-<style>
-  :root {
-    --bg: #0a0e1a;
-    --panel: #121826;
-    --ink: #e6edf7;
-    --dim: #8b96aa;
-    --accent: #00e5ff;
-    --accent2: #ff5ec4;
-    --accent3: #ffd166;
-    --line: #1f2740;
-    --good: #6ef38a;
-  }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    min-height: 100vh;
-  }
-  header {
-    padding: 1.2rem 1.6rem 0.4rem;
-    border-bottom: 1px solid var(--line);
-  }
-  header h1 {
-    margin: 0;
-    font-size: 1.35rem;
-    letter-spacing: 0.02em;
-    font-weight: 600;
-  }
-  header p {
-    margin: 0.3rem 0 0.7rem;
-    color: var(--dim);
-    font-size: 0.85rem;
-  }
-  main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    padding: 1rem 1.6rem 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
-  .panel {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 1rem 1.1rem;
-  }
-  .panel h2 {
-    margin: 0 0 0.6rem;
-    font-size: 1rem;
-    color: var(--accent);
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-  .row {
-    display: flex;
-    gap: 0.6rem;
-    align-items: center;
-    margin-bottom: 0.55rem;
-  }
-  .row label {
-    flex: 0 0 150px;
-    color: var(--dim);
-    font-size: 0.85rem;
-  }
-  .row input[type="number"] {
-    flex: 1;
-    background: #0e1422;
-    border: 1px solid var(--line);
-    color: var(--ink);
-    padding: 0.45rem 0.6rem;
-    border-radius: 6px;
-    font-family: ui-monospace, monospace;
-    font-size: 0.9rem;
-  }
-  .row input[type="number"]:focus {
-    outline: none;
-    border-color: var(--accent);
-  }
-  .row .unit {
-    flex: 0 0 50px;
-    color: var(--dim);
-    font-size: 0.8rem;
-    font-family: ui-monospace, monospace;
-  }
-  .out {
-    margin-top: 0.7rem;
-    padding: 0.7rem;
-    background: #0a0f1c;
-    border: 1px dashed var(--line);
-    border-radius: 6px;
-    font-family: ui-monospace, monospace;
-    font-size: 0.95rem;
-  }
-  .out .big {
-    color: var(--accent3);
-    font-size: 1.4rem;
-    font-weight: 600;
-  }
-  .out .lbl { color: var(--dim); font-size: 0.78rem; display: block; margin-bottom: 0.2rem; }
-  canvas {
-    display: block;
-    width: 100%;
-    background: #05080f;
-    border-radius: 8px;
-  }
-  .anim-wrap { grid-column: 1 / -1; }
-  .controls {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.8rem;
-    align-items: center;
-  }
-  .controls label {
-    color: var(--dim);
-    font-size: 0.82rem;
-  }
-  .controls input[type="range"] {
-    vertical-align: middle;
-    accent-color: var(--accent);
-  }
-  .pill {
-    display: inline-block;
-    padding: 0.18rem 0.55rem;
-    background: #0e1422;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-family: ui-monospace, monospace;
-    color: var(--accent);
-  }
-  .formula {
-    background: #0a0f1c;
-    padding: 0.55rem 0.8rem;
-    border-radius: 6px;
-    font-family: ui-monospace, monospace;
-    font-size: 0.88rem;
-    color: var(--dim);
-    margin-bottom: 0.8rem;
-  }
-  .formula b { color: var(--ink); }
-  .legend {
-    display: flex;
-    gap: 1.2rem;
-    flex-wrap: wrap;
-    margin-top: 0.6rem;
-    font-size: 0.8rem;
-    color: var(--dim);
-  }
-  .legend span::before {
-    content: "";
-    display: inline-block;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    margin-right: 0.4rem;
-    vertical-align: middle;
-  }
-  .legend .l1::before { background: var(--accent); }
-  .legend .l2::before { background: var(--accent2); }
-  .legend .l3::before { background: var(--accent3); }
-  .legend .l4::before { background: var(--good); }
-  .preset {
-    background: #0e1422;
-    border: 1px solid var(--line);
-    color: var(--ink);
-    padding: 0.35rem 0.7rem;
-    border-radius: 5px;
-    font-size: 0.78rem;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .preset:hover { border-color: var(--accent); color: var(--accent); }
-  footer {
-    text-align: center;
-    color: var(--dim);
-    font-size: 0.76rem;
-    padding: 0.5rem 1rem 1.5rem;
-  }
-  .fringe-strip {
-    display: block;
-    width: 100%;
-    height: 32px;
-    border-radius: 4px;
-    margin-top: 0.5rem;
-  }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b0e14">
+<title>FRINGE CALCULATOR</title>
+<meta name="description" content="Browser-based Michelson-Morley fringe-shift demo. Forward and inverse calculator, animated interferometer, scenario presets covering 1881 Potsdam, 1887 Cleveland, and Lorentz contraction.">
+<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<header>
-  <h1>Michelson-Morley Fringe / Velocity Calculator</h1>
-  <p>Formula from Michelson &amp; Morley (1887), Am. J. Sci. 34: 333-345, p. 336.
-     <span class="pill">N = 2 D v&sup2; / (&lambda; c&sup2;)</span></p>
-</header>
-
-<main>
-
-  <section class="panel">
-    <h2>Forward: velocity &rarr; fringe shift</h2>
-    <div class="formula">N = 2&middot;<b>D</b>&middot;<b>v</b>&sup2; / (<b>&lambda;</b>&middot;c&sup2;)</div>
-    <div class="row">
-      <label>Arm length D</label>
-      <input id="f_D" type="number" step="0.1" value="11">
-      <span class="unit">m</span>
-    </div>
-    <div class="row">
-      <label>Wavelength &lambda;</label>
-      <input id="f_lam" type="number" step="1" value="589">
-      <span class="unit">nm</span>
-    </div>
-    <div class="row">
-      <label>Ether velocity v</label>
-      <input id="f_v" type="number" step="0.1" value="30">
-      <span class="unit">km/s</span>
-    </div>
-    <div class="out">
-      <span class="lbl">Predicted fringe shift on 90&deg; rotation</span>
-      <span class="big" id="f_N">--</span> fringes
-      <div style="margin-top:0.4rem; font-size:0.8rem; color:var(--dim);">
-        path difference &Delta; = <span id="f_dp">--</span> nm
+<main id="app">
+  <header>
+    <h1 id="app-title">FRINGE CALCULATOR</h1>
+    <p class="sub">N = 2·D·v² / (λ·c²) — Michelson &amp; Morley 1887</p>
+    <div class="info-box">
+      <button class="info-btn" type="button" id="about-btn">ⓘ About</button>
+      <button class="info-btn" type="button" id="legend-btn">📖 Legend</button>
+      <div class="info-popup" id="about-popup" hidden>
+        <p>Interactive demonstration of the classical fringe-shift formula derived in Michelson &amp; Morley (1887), <em>American Journal of Science</em> 34: 333-345, p. 336.</p>
+        <p>The parallel arm round-trip time is 2D·c/(c²-v²); the perpendicular arm is 2D/√(c²-v²). The path-length difference is D·v²/c² per orientation. Rotating the apparatus 90° flips the sign of the difference, so the fringe displacement scales as 2D·v²/(λc²).</p>
+        <p>Drag the sliders, pick a scenario, or toggle Lorentz contraction to see the parallel arm shrink by √(1-β²) and null the predicted shift.</p>
+      </div>
+      <div class="info-popup" id="legend-popup" hidden>
+        <p><b>Cyan pulse</b> — light traveling on the parallel arm (along the wind).</p>
+        <p><b>Magenta pulse</b> — light on the perpendicular arm.</p>
+        <p><b>Source disc</b> — laser, color matches λ.</p>
+        <p><b>Diagonal slab</b> — beam splitter (50/50 plate).</p>
+        <p><b>Bottom strip</b> — fringe pattern as seen by an observer; horizontal position of bright bands shifts with N mod 1.</p>
+        <p><b>Phase-gap bar</b> — Δ-path expressed as a fraction of 2π.</p>
       </div>
     </div>
-    <div style="margin-top:0.7rem; display:flex; gap:0.4rem; flex-wrap:wrap;">
-      <button class="preset" data-D="1.2"  data-lam="589" data-v="30">1881 Potsdam (D=1.2 m)</button>
-      <button class="preset" data-D="11"   data-lam="589" data-v="30">1887 Cleveland (D=11 m)</button>
-      <button class="preset" data-D="11"   data-lam="589" data-v="370">CMB rest frame (370 km/s)</button>
+  </header>
+
+  <section id="view">
+    <canvas id="stage"></canvas>
+    <canvas id="fringes"></canvas>
+  </section>
+
+  <aside id="readout">
+    <div class="r-block">
+      <span class="r-lbl">v</span><span class="r-val" id="r-v">--</span>
+      <span class="r-lbl">D</span><span class="r-val" id="r-D">--</span>
+      <span class="r-lbl">λ</span><span class="r-val" id="r-lam">--</span>
+      <span class="r-lbl">β = v/c</span><span class="r-val" id="r-beta">--</span>
+      <span class="r-lbl">Δ path</span><span class="r-val" id="r-dp">--</span>
+      <span class="r-lbl big">N (fringes)</span><span class="r-val big" id="r-N">--</span>
+    </div>
+    <div class="r-phase">
+      <span class="r-lbl">phase gap</span>
+      <div class="phase-bar"><div id="phase-fill"></div></div>
+      <span class="r-val" id="r-phase">--</span>
+    </div>
+  </aside>
+
+  <section id="calcpanel">
+    <div class="calc">
+      <div class="calc-h">forward: v → N</div>
+      <label>D <input id="f_D"   type="number" step="0.1" value="11"></label>
+      <label>λ <input id="f_lam" type="number" step="1"   value="589"></label>
+      <label>v <input id="f_v"   type="number" step="0.1" value="30"></label>
+      <div class="calc-out">N = <span id="f_N">--</span></div>
+    </div>
+    <div class="calc">
+      <div class="calc-h">inverse: N → v</div>
+      <label>D <input id="i_D"   type="number" step="0.1" value="11"></label>
+      <label>λ <input id="i_lam" type="number" step="1"   value="589"></label>
+      <label>N <input id="i_N"   type="number" step="0.001" value="0.4"></label>
+      <div class="calc-out">v = <span id="i_v">--</span> km/s</div>
     </div>
   </section>
 
-  <section class="panel">
-    <h2>Inverse: fringe shift &rarr; velocity</h2>
-    <div class="formula">v = c &middot; &radic;( N&middot;<b>&lambda;</b> / (2&middot;<b>D</b>) )</div>
-    <div class="row">
-      <label>Arm length D</label>
-      <input id="i_D" type="number" step="0.1" value="11">
-      <span class="unit">m</span>
-    </div>
-    <div class="row">
-      <label>Wavelength &lambda;</label>
-      <input id="i_lam" type="number" step="1" value="589">
-      <span class="unit">nm</span>
-    </div>
-    <div class="row">
-      <label>Fringe shift N</label>
-      <input id="i_N" type="number" step="0.001" value="0.4">
-      <span class="unit">fringes</span>
-    </div>
-    <div class="out">
-      <span class="lbl">Implied ether-wind velocity</span>
-      <span class="big" id="i_v">--</span> km/s
-      <div style="margin-top:0.4rem; font-size:0.8rem; color:var(--dim);">
-        as fraction of c: <span id="i_beta">--</span>
-      </div>
-    </div>
-    <div style="margin-top:0.7rem; display:flex; gap:0.4rem; flex-wrap:wrap;">
-      <button class="preset" data-N="0.4" data-D="11" data-lam="589" data-target="i">M&amp;M 1887 prediction</button>
-      <button class="preset" data-N="0.01" data-D="11" data-lam="589" data-target="i">Observed upper bound (~1/40)</button>
-    </div>
-  </section>
-
-  <section class="panel anim-wrap">
-    <h2>Interferometer animation</h2>
-    <div class="controls">
-      <label>Ether wind v
+  <footer id="ctrl">
+    <div class="ctrl-row sliders">
+      <label>v
         <input id="a_v" type="range" min="0" max="60000" step="500" value="30000">
-        <span id="a_v_val" class="pill">30000 km/s</span>
+        <span class="pill" id="a_v_val">30000 km/s</span>
       </label>
-      <label>Arm length D
+      <label>D
         <input id="a_D" type="range" min="3" max="14" step="0.5" value="11">
-        <span id="a_D_val" class="pill">11 m</span>
+        <span class="pill" id="a_D_val">11 m</span>
       </label>
-      <label>Wavelength
+      <label>λ
         <input id="a_lam" type="range" min="400" max="700" step="5" value="589">
-        <span id="a_lam_val" class="pill">589 nm</span>
+        <span class="pill" id="a_lam_val">589 nm</span>
       </label>
-      <label>Speed
+      <label>speed
         <input id="a_speed" type="range" min="0.2" max="3" step="0.1" value="1">
       </label>
-      <label><input id="a_show_wind" type="checkbox" checked> show wind</label>
-      <label><input id="a_pause" type="checkbox"> pause</label>
+      <label>rotation
+        <input id="a_rot" type="range" min="0" max="360" step="1" value="0">
+        <span class="pill" id="a_rot_val">0°</span>
+      </label>
+      <label class="chk"><input id="a_lorentz" type="checkbox"> Lorentz contraction</label>
+      <label class="chk"><input id="a_wind"    type="checkbox" checked> show wind</label>
+      <label class="chk"><input id="a_pause"   type="checkbox"> pause</label>
     </div>
-    <canvas id="stage" width="1280" height="520"></canvas>
-    <div class="legend">
-      <span class="l1">parallel arm (along wind)</span>
-      <span class="l2">perpendicular arm</span>
-      <span class="l3">recombined &rarr; detector</span>
-      <span class="l4">phase / path-length gap</span>
-    </div>
-    <canvas id="fringes" class="fringe-strip" width="1280" height="48"></canvas>
-    <p style="font-size:0.82rem; color:var(--dim); margin:0.5rem 0 0;">
-      v exaggerated for visibility. Parallel-arm round trip takes 2D&middot;c/(c&sup2;-v&sup2;); perpendicular takes 2D/&radic;(c&sup2;-v&sup2;). Difference, to second order in v/c, is D&middot;v&sup2;/c&sup2; per orientation, doubling on 90&deg; rotation.
-    </p>
-  </section>
-
+    <div class="ctrl-row scenarios" id="scenarios"></div>
+  </footer>
 </main>
 
-<footer>
-  Source: A. A. Michelson &amp; E. W. Morley, "On the Relative Motion of the Earth and the Luminiferous Ether,"
-  American Journal of Science 34, 333-345 (1887).
-</footer>
-
-<script>
-const C = 299792458;
-
-function fmt(x, digits=4) {
-  if (!isFinite(x)) return "--";
-  if (Math.abs(x) >= 1e6 || (Math.abs(x) > 0 && Math.abs(x) < 1e-4)) return x.toExponential(digits);
-  return x.toFixed(digits);
-}
-
-function calcForward() {
-  const D = parseFloat(document.getElementById('f_D').value);
-  const lam = parseFloat(document.getElementById('f_lam').value) * 1e-9;
-  const v = parseFloat(document.getElementById('f_v').value) * 1000;
-  const N = (2 * D * v * v) / (lam * C * C);
-  const dp = (2 * D * v * v) / (C * C);
-  document.getElementById('f_N').textContent = fmt(N, 4);
-  document.getElementById('f_dp').textContent = fmt(dp * 1e9, 3);
-}
-
-function calcInverse() {
-  const D = parseFloat(document.getElementById('i_D').value);
-  const lam = parseFloat(document.getElementById('i_lam').value) * 1e-9;
-  const N = parseFloat(document.getElementById('i_N').value);
-  const v = C * Math.sqrt(N * lam / (2 * D));
-  document.getElementById('i_v').textContent = fmt(v / 1000, 3);
-  document.getElementById('i_beta').textContent = fmt(v / C, 6);
-}
-
-['f_D','f_lam','f_v'].forEach(id => document.getElementById(id).addEventListener('input', calcForward));
-['i_D','i_lam','i_N'].forEach(id => document.getElementById(id).addEventListener('input', calcInverse));
-
-document.querySelectorAll('.preset').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const t = btn.dataset.target || 'f';
-    if (btn.dataset.D)   document.getElementById(t+'_D').value = btn.dataset.D;
-    if (btn.dataset.lam) document.getElementById(t+'_lam').value = btn.dataset.lam;
-    if (btn.dataset.v)   document.getElementById(t+'_v').value = btn.dataset.v;
-    if (btn.dataset.N)   document.getElementById(t+'_N').value = btn.dataset.N;
-    calcForward(); calcInverse();
-  });
-});
-
-calcForward(); calcInverse();
-
-const stage = document.getElementById('stage');
-const sctx = stage.getContext('2d');
-const fr = document.getElementById('fringes');
-const fctx = fr.getContext('2d');
-
-function fitCanvas(cv) {
-  const ratio = window.devicePixelRatio || 1;
-  const rect = cv.getBoundingClientRect();
-  cv.width = Math.round(rect.width * ratio);
-  cv.height = Math.round(rect.height * ratio);
-  return ratio;
-}
-
-let stageRatio = fitCanvas(stage);
-let frRatio = fitCanvas(fr);
-window.addEventListener('resize', () => {
-  stageRatio = fitCanvas(stage);
-  frRatio = fitCanvas(fr);
-});
-
-function wavelengthToRGB(nm) {
-  let r=0,g=0,b=0;
-  if (nm >= 380 && nm < 440) { r = -(nm-440)/60; g = 0; b = 1; }
-  else if (nm < 490) { r = 0; g = (nm-440)/50; b = 1; }
-  else if (nm < 510) { r = 0; g = 1; b = -(nm-510)/20; }
-  else if (nm < 580) { r = (nm-510)/70; g = 1; b = 0; }
-  else if (nm < 645) { r = 1; g = -(nm-645)/65; b = 0; }
-  else if (nm <= 780) { r = 1; g = 0; b = 0; }
-  return `rgb(${Math.round(r*255)}, ${Math.round(g*255)}, ${Math.round(b*255)})`;
-}
-
-const A = {
-  vKms: 30000, D: 11, lam: 589, speed: 1, pause: false, showWind: true,
-  t: 0
-};
-
-function bind(id, key, fn) {
-  const el = document.getElementById(id);
-  el.addEventListener('input', () => {
-    A[key] = parseFloat(el.value);
-    if (fn) fn();
-  });
-}
-bind('a_v', 'vKms', () => document.getElementById('a_v_val').textContent = A.vKms + ' km/s');
-bind('a_D', 'D',    () => document.getElementById('a_D_val').textContent = A.D + ' m');
-bind('a_lam', 'lam',() => document.getElementById('a_lam_val').textContent = A.lam + ' nm');
-bind('a_speed', 'speed');
-document.getElementById('a_show_wind').addEventListener('change', e => A.showWind = e.target.checked);
-document.getElementById('a_pause').addEventListener('change', e => A.pause = e.target.checked);
-
-function drawStage(dt) {
-  const W = stage.width, H = stage.height;
-  sctx.clearRect(0, 0, W, H);
-
-  const beta = (A.vKms * 1000) / C;
-  const beta2 = beta * beta;
-
-  sctx.fillStyle = '#05080f';
-  sctx.fillRect(0, 0, W, H);
-
-  const sourceX = 0.10 * W;
-  const splitX  = 0.36 * W;
-  const yMid    = 0.55 * H;
-  const armPx   = 0.30 * W;
-  const mirRX   = splitX + armPx;
-  const mirUY   = yMid - armPx;
-  const detY    = yMid + 0.18 * H;
-
-  if (A.showWind) {
-    sctx.save();
-    const arrowY = 0.10 * H;
-    const wOff = (A.t * 0.04 * (A.vKms / 1000)) % 60;
-    sctx.strokeStyle = 'rgba(80,140,200,0.25)';
-    sctx.lineWidth = 1.2;
-    for (let x = -wOff; x < W; x += 60) {
-      sctx.beginPath();
-      sctx.moveTo(x, arrowY);
-      sctx.lineTo(x + 30, arrowY);
-      sctx.lineTo(x + 24, arrowY - 4);
-      sctx.moveTo(x + 30, arrowY);
-      sctx.lineTo(x + 24, arrowY + 4);
-      sctx.stroke();
-    }
-    sctx.fillStyle = '#5d80a8';
-    sctx.font = `${14 * stageRatio}px ui-monospace, monospace`;
-    sctx.fillText('ether wind  v →', 12 * stageRatio, arrowY - 10);
-    sctx.fillText(`${A.vKms.toLocaleString()} km/s  (β = ${beta.toExponential(2)})`,
-      12 * stageRatio, arrowY + 22);
-    sctx.restore();
-  }
-
-  sctx.strokeStyle = '#1f2740';
-  sctx.lineWidth = 1;
-  sctx.setLineDash([4, 6]);
-  sctx.beginPath();
-  sctx.moveTo(splitX, yMid); sctx.lineTo(mirRX, yMid);
-  sctx.moveTo(splitX, yMid); sctx.lineTo(splitX, mirUY);
-  sctx.stroke();
-  sctx.setLineDash([]);
-
-  const tParRel = 1 - beta2;
-  const tPerpRel = Math.sqrt(1 - beta2);
-  const cycleSec = 2.0;
-  const phaseAdvance = (A.t / 1000) * (1 / cycleSec) * A.speed;
-  const phase = phaseAdvance % 1;
-
-  function lerp(a, b, t) { return a + (b - a) * t; }
-
-  function pulseOnSegment(x0, y0, x1, y1, frac, color, glow=true) {
-    const x = lerp(x0, x1, frac);
-    const y = lerp(y0, y1, frac);
-    if (glow) {
-      const grd = sctx.createRadialGradient(x, y, 0, x, y, 16 * stageRatio);
-      grd.addColorStop(0, color);
-      grd.addColorStop(1, 'rgba(0,0,0,0)');
-      sctx.fillStyle = grd;
-      sctx.beginPath();
-      sctx.arc(x, y, 16 * stageRatio, 0, 2 * Math.PI);
-      sctx.fill();
-    }
-    sctx.fillStyle = color;
-    sctx.beginPath();
-    sctx.arc(x, y, 3.5 * stageRatio, 0, 2 * Math.PI);
-    sctx.fill();
-  }
-
-  const beamColor = wavelengthToRGB(A.lam);
-
-  sctx.strokeStyle = 'rgba(255,255,255,0.07)';
-  sctx.lineWidth = 2 * stageRatio;
-  sctx.beginPath();
-  sctx.moveTo(sourceX, yMid); sctx.lineTo(splitX, yMid);
-  sctx.moveTo(splitX, yMid); sctx.lineTo(mirRX, yMid);
-  sctx.moveTo(splitX, yMid); sctx.lineTo(splitX, mirUY);
-  sctx.moveTo(splitX, yMid); sctx.lineTo(splitX, detY);
-  sctx.stroke();
-
-  const incomingPhase = phase;
-  pulseOnSegment(sourceX, yMid, splitX, yMid, Math.min(1, incomingPhase * 1.2), beamColor);
-
-  const parPhase = (phase / tParRel) % 2;
-  const parFrac = parPhase < 1 ? parPhase : 2 - parPhase;
-  const parX = lerp(splitX, mirRX, parFrac);
-  if (parPhase < 2) {
-    pulseOnSegment(splitX, yMid, mirRX, yMid, parFrac, '#00e5ff');
-  }
-
-  const perpPhase = (phase / tPerpRel) % 2;
-  const perpFrac = perpPhase < 1 ? perpPhase : 2 - perpPhase;
-  if (perpPhase < 2) {
-    pulseOnSegment(splitX, yMid, splitX, mirUY, perpFrac, '#ff5ec4');
-  }
-
-  function drawWave(x0, y0, x1, y1, color, density, amp, phaseShift) {
-    const dx = x1 - x0, dy = y1 - y0;
-    const len = Math.hypot(dx, dy);
-    const nx = dx / len, ny = dy / len;
-    const px = -ny, py = nx;
-    const k = (2 * Math.PI / (A.lam * 1e-9)) / 2e9;
-    sctx.strokeStyle = color;
-    sctx.globalAlpha = 0.55;
-    sctx.lineWidth = 1.4 * stageRatio;
-    sctx.beginPath();
-    const steps = Math.floor(len / 1.5);
-    for (let s = 0; s <= steps; s++) {
-      const f = s / steps;
-      const lx = x0 + dx * f;
-      const ly = y0 + dy * f;
-      const ph = (f * density + phaseShift) * 2 * Math.PI;
-      const off = Math.sin(ph) * amp * stageRatio;
-      const wx = lx + px * off;
-      const wy = ly + py * off;
-      if (s === 0) sctx.moveTo(wx, wy); else sctx.lineTo(wx, wy);
-    }
-    sctx.stroke();
-    sctx.globalAlpha = 1;
-  }
-
-  const tNow = A.t / 1000;
-  const parDensity = 26 / tParRel;
-  const perpDensity = 26 / tPerpRel;
-  const tRef = tNow * A.speed * 1.5;
-
-  drawWave(splitX, yMid, mirRX, yMid, '#00e5ff', parDensity, 4, -tRef);
-  drawWave(splitX, yMid, splitX, mirUY, '#ff5ec4', perpDensity, 4, -tRef);
-
-  drawWave(sourceX, yMid, splitX, yMid, beamColor, 26, 3, -tRef);
-
-  sctx.fillStyle = '#080c16';
-  sctx.strokeStyle = '#3a4868';
-  sctx.lineWidth = 2 * stageRatio;
-  sctx.beginPath();
-  sctx.arc(sourceX, yMid, 22 * stageRatio, 0, 2*Math.PI);
-  sctx.fill(); sctx.stroke();
-  sctx.fillStyle = beamColor;
-  sctx.beginPath();
-  sctx.arc(sourceX, yMid, 9 * stageRatio, 0, 2*Math.PI);
-  sctx.fill();
-  sctx.fillStyle = '#8b96aa';
-  sctx.font = `${12 * stageRatio}px ui-monospace, monospace`;
-  sctx.textAlign = 'center';
-  sctx.fillText('source', sourceX, yMid + 38 * stageRatio);
-
-  sctx.save();
-  sctx.translate(splitX, yMid);
-  sctx.rotate(-Math.PI / 4);
-  sctx.fillStyle = 'rgba(150,180,220,0.18)';
-  sctx.fillRect(-26 * stageRatio, -2 * stageRatio, 52 * stageRatio, 4 * stageRatio);
-  sctx.strokeStyle = '#a8c0e0';
-  sctx.lineWidth = 1.2 * stageRatio;
-  sctx.strokeRect(-26 * stageRatio, -2 * stageRatio, 52 * stageRatio, 4 * stageRatio);
-  sctx.restore();
-  sctx.textAlign = 'center';
-  sctx.fillStyle = '#8b96aa';
-  sctx.fillText('beam splitter', splitX, yMid - 38 * stageRatio);
-
-  sctx.strokeStyle = '#cbd6e8';
-  sctx.lineWidth = 3 * stageRatio;
-  sctx.beginPath();
-  sctx.moveTo(mirRX, yMid - 22 * stageRatio); sctx.lineTo(mirRX, yMid + 22 * stageRatio);
-  sctx.stroke();
-  sctx.fillStyle = '#8b96aa';
-  sctx.fillText('mirror (parallel arm)', mirRX, yMid + 40 * stageRatio);
-
-  sctx.beginPath();
-  sctx.moveTo(splitX - 22 * stageRatio, mirUY); sctx.lineTo(splitX + 22 * stageRatio, mirUY);
-  sctx.stroke();
-  sctx.fillText('mirror (perpendicular)', splitX, mirUY - 14 * stageRatio);
-
-  sctx.fillStyle = '#080c16';
-  sctx.strokeStyle = '#3a4868';
-  sctx.lineWidth = 2 * stageRatio;
-  sctx.beginPath();
-  sctx.rect(splitX - 36 * stageRatio, detY - 14 * stageRatio, 72 * stageRatio, 28 * stageRatio);
-  sctx.fill(); sctx.stroke();
-  sctx.fillStyle = '#8b96aa';
-  sctx.fillText('detector', splitX, detY + 32 * stageRatio);
-
-  sctx.font = `${13 * stageRatio}px ui-monospace, monospace`;
-  sctx.textAlign = 'left';
-  sctx.fillStyle = '#00e5ff';
-  sctx.fillText(`t∥ = 2D / (c(1-β²))`, splitX + 20 * stageRatio, yMid - 14 * stageRatio);
-  sctx.fillStyle = '#ff5ec4';
-  sctx.fillText(`t⊥ = 2D / (c√(1-β²))`, splitX + 20 * stageRatio, mirUY + 22 * stageRatio);
-
-  const D = A.D;
-  const lam_m = A.lam * 1e-9;
-  const v_ms = A.vKms * 1000;
-  const N = (2 * D * v_ms * v_ms) / (lam_m * C * C);
-  const dpath = (2 * D * v_ms * v_ms) / (C * C);
-
-  const boxX = 0.72 * W, boxY = 0.06 * H;
-  const boxW = 0.26 * W, boxH = 0.42 * H;
-  sctx.fillStyle = 'rgba(10,15,28,0.85)';
-  sctx.strokeStyle = '#1f2740';
-  sctx.lineWidth = 1 * stageRatio;
-  sctx.fillRect(boxX, boxY, boxW, boxH);
-  sctx.strokeRect(boxX, boxY, boxW, boxH);
-
-  sctx.fillStyle = '#00e5ff';
-  sctx.font = `${14 * stageRatio}px ui-monospace, monospace`;
-  sctx.fillText('LIVE READOUT', boxX + 12 * stageRatio, boxY + 22 * stageRatio);
-
-  const lines = [
-    [`v`, `${A.vKms.toLocaleString()} km/s`, '#e6edf7'],
-    [`D`, `${D.toFixed(1)} m`, '#e6edf7'],
-    [`λ`, `${A.lam.toFixed(0)} nm`, beamColor],
-    [`β = v/c`, `${beta.toExponential(3)}`, '#8b96aa'],
-    [`Δ path`, `${dpath > 1e-3 ? (dpath*1e3).toFixed(3)+' mm' : (dpath*1e9).toFixed(2)+' nm'}`, '#ffd166'],
-    [`fringe shift N`, `${fmt(N, 4)}`, '#6ef38a'],
-  ];
-  sctx.font = `${13 * stageRatio}px ui-monospace, monospace`;
-  lines.forEach((ln, i) => {
-    const y = boxY + 50 * stageRatio + i * 22 * stageRatio;
-    sctx.fillStyle = '#8b96aa';
-    sctx.fillText(ln[0], boxX + 12 * stageRatio, y);
-    sctx.fillStyle = ln[2];
-    sctx.fillText(ln[1], boxX + 130 * stageRatio, y);
-  });
-
-  const phaseGap = (dpath / lam_m) % 1;
-  const gapY = boxY + boxH + 20 * stageRatio;
-  const gapW = boxW - 24 * stageRatio;
-  sctx.fillStyle = '#8b96aa';
-  sctx.font = `${12 * stageRatio}px ui-monospace, monospace`;
-  sctx.fillText('phase gap (mod 2π)', boxX + 12 * stageRatio, gapY);
-  sctx.strokeStyle = '#1f2740';
-  sctx.strokeRect(boxX + 12 * stageRatio, gapY + 6 * stageRatio, gapW, 14 * stageRatio);
-  sctx.fillStyle = '#6ef38a';
-  sctx.fillRect(boxX + 12 * stageRatio, gapY + 6 * stageRatio, gapW * phaseGap, 14 * stageRatio);
-  sctx.fillStyle = '#6ef38a';
-  sctx.fillText(`${(phaseGap * 360).toFixed(2)}°`, boxX + 12 * stageRatio, gapY + 38 * stageRatio);
-
-  sctx.fillStyle = '#8b96aa';
-  sctx.font = `${11 * stageRatio}px ui-monospace, monospace`;
-  sctx.textAlign = 'center';
-  sctx.fillText(`D = ${D.toFixed(1)} m`, (splitX + mirRX) / 2, yMid + 60 * stageRatio);
-  sctx.save();
-  sctx.translate(splitX - 18 * stageRatio, (yMid + mirUY) / 2);
-  sctx.rotate(-Math.PI / 2);
-  sctx.fillText(`D = ${D.toFixed(1)} m`, 0, 0);
-  sctx.restore();
-}
-
-function drawFringes() {
-  const W = fr.width, H = fr.height;
-  fctx.clearRect(0, 0, W, H);
-  const D = A.D, lam = A.lam * 1e-9, v = A.vKms * 1000;
-  const N = (2 * D * v * v) / (lam * C * C);
-  const phaseShift = (N % 1) * 2 * Math.PI;
-  const cycles = 8;
-  for (let x = 0; x < W; x++) {
-    const ph = (x / W) * cycles * 2 * Math.PI + phaseShift;
-    const I = 0.5 + 0.5 * Math.cos(ph);
-    const c = wavelengthToRGB(A.lam);
-    fctx.fillStyle = c;
-    fctx.globalAlpha = I;
-    fctx.fillRect(x, 0, 1, H);
-  }
-  fctx.globalAlpha = 1;
-}
-
-let last = performance.now();
-function loop(now) {
-  const dt = now - last;
-  last = now;
-  if (!A.pause) A.t += dt * A.speed;
-  drawStage(dt);
-  drawFringes();
-  requestAnimationFrame(loop);
-}
-requestAnimationFrame(loop);
-</script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
