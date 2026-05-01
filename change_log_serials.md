@@ -19,6 +19,13 @@ Format:
 - **Change:** Initial single-page calculator + interferometer animation. Forward (v→N) and inverse (N→v) panels. Reference: Michelson & Morley (1887), p. 336.
 - **Revert path:** `git revert b7216e9` (initial commit).
 
+## S002 — MMX preset table, observed-fringe inverse, extra parameters
+
+- **Date:** 2026-04-30
+- **Files changed:** `js/scenarios.js`, `js/ui.js`, `js/main.js`, `index.html`, `css/styles.css`, `change_log_serials.md`, `README.md`
+- **Change:** Expanded `scenarios.js` into a 17-entry MMX preset table covering Michelson 1881, M&M 1887, Morley-Miller 1902-05, Miller 1925, Kennedy 1926, Illingworth 1927, Piccard-Stahel 1928, Joos 1930, Cedarholm-Townes 1958, Jaseja-Javan 1964, Brillet-Hall 1979, Müller 2003, Antonini 2005, Stanwix 2006, Eisele 2009, Herrmann 2009, Nagel 2015. Each entry carries L_arm, n_reflections, D, λ or ν, refractive index, predicted N, observed N ± σ_N (or Δc/c bound), and the original citation. Added `impliedV` / `impliedVSigma` derivations from the inverse formula and the SME small-β analog. New modal table (📚 button) renders the full set; clicking a row applies it across all panels. Forward calc panel takes L_arm, n_refl, n_med separately. Inverse panel takes observed N + σ_N and reports v ± σ_v. Third card converts a Δc/c bound to a velocity bound.
+- **Revert path:** `git revert <S002 commit>`; tag `v-s000001` is the previous milestone.
+
 ## S001 — Playable demo restructure
 
 - **Date:** 2026-04-30

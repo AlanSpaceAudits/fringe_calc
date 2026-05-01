@@ -57,17 +57,26 @@
   <section id="calcpanel">
     <div class="calc">
       <div class="calc-h">forward: v → N</div>
-      <label>D <input id="f_D"   type="number" step="0.1" value="11"></label>
+      <label>L<sub>arm</sub> <input id="f_L"   type="number" step="0.1" value="1.2"></label>
+      <label>n<sub>refl</sub> <input id="f_nr"  type="number" step="1"   value="8"></label>
+      <label>n<sub>med</sub>  <input id="f_n"   type="number" step="0.0001" value="1.0"></label>
       <label>λ <input id="f_lam" type="number" step="1"   value="589"></label>
       <label>v <input id="f_v"   type="number" step="0.1" value="30"></label>
-      <div class="calc-out">N = <span id="f_N">--</span></div>
+      <div class="calc-out">D = <span id="f_D_eff">--</span> m · N = <span id="f_N">--</span></div>
     </div>
     <div class="calc">
-      <div class="calc-h">inverse: N → v</div>
+      <div class="calc-h">inverse: observed N → v</div>
       <label>D <input id="i_D"   type="number" step="0.1" value="11"></label>
       <label>λ <input id="i_lam" type="number" step="1"   value="589"></label>
-      <label>N <input id="i_N"   type="number" step="0.001" value="0.4"></label>
-      <div class="calc-out">v = <span id="i_v">--</span> km/s</div>
+      <label>N<sub>obs</sub> <input id="i_N"   type="number" step="0.001" value="0.01"></label>
+      <label>σ<sub>N</sub>   <input id="i_sN"  type="number" step="0.001" value="0.005"></label>
+      <div class="calc-out">v = <span id="i_v">--</span> ± <span id="i_sv">--</span> km/s</div>
+    </div>
+    <div class="calc">
+      <div class="calc-h">Δc/c bound → v</div>
+      <label>Δc/c &le; <input id="d_dcc" type="number" step="1e-18" value="1e-15"></label>
+      <div class="calc-out">v &le; <span id="d_v">--</span> m/s &nbsp;(β &le; <span id="d_beta">--</span>)</div>
+      <button class="scenario" id="open-presets" style="margin-top:6px; width:100%;">📚 Open MMX preset table</button>
     </div>
   </section>
 
@@ -98,6 +107,42 @@
     </div>
     <div class="ctrl-row scenarios" id="scenarios"></div>
   </footer>
+
+  <div id="presets-modal" class="modal" hidden>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2>MMX preset table — measurements &amp; reported results</h2>
+        <button class="info-btn" id="close-presets" type="button">✕ close</button>
+      </div>
+      <div class="modal-body">
+        <table id="presets-table">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Experiment</th>
+              <th>Apparatus</th>
+              <th>L<sub>arm</sub> (m)</th>
+              <th>n<sub>refl</sub></th>
+              <th>D (m)</th>
+              <th>λ / ν</th>
+              <th>v<sub>assumed</sub> (km/s)</th>
+              <th>N<sub>pred</sub></th>
+              <th>N<sub>obs</sub> ± σ</th>
+              <th>Δc/c bound</th>
+              <th>v<sub>implied</sub></th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody id="presets-tbody"></tbody>
+        </table>
+        <p class="modal-foot">
+          v<sub>implied</sub> from observed N: <code>v = c · √(N·λ / 2D)</code>.
+          From SME bound: <code>v = c · √(2·Δc/c)</code>.
+          Modern resonator experiments typically report κ̃ Lorentz-violation parameters; here Δc/c is the canonical analog of the small-β fringe-shift bound.
+        </p>
+      </div>
+    </div>
+  </div>
 </main>
 
 <script type="module" src="js/main.js"></script>

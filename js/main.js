@@ -1,11 +1,13 @@
 import { state, initCanvases, drawStage, drawFringes } from './sim.js';
-import { bindCalculators, bindSliders, buildScenarios, bindPopups, updateReadout } from './ui.js';
+import { bindCalculators, bindSliders, buildScenarios, bindPopups, updateReadout, buildPresetTable, bindModal } from './ui.js';
 
 initCanvases();
 bindCalculators();
 bindSliders();
 buildScenarios();
 bindPopups();
+buildPresetTable();
+bindModal();
 
 let last = performance.now();
 function loop(now) {

@@ -16,14 +16,27 @@ derived in Michelson & Morley (1887), *American Journal of Science* 34: 333-345,
 - Lorentz-contraction toggle (parallel arm × √(1-β²)); shows null result
 - Live readout panel: v, D, λ, β, Δ-path, N, phase gap (deg)
 - Fringe-pattern strip below the stage updates with N mod 1
-- Scenario presets:
-  - 1881 Potsdam (D = 1.2 m)
-  - 1887 Cleveland (D = 11 m)
-  - Classical aether wind
-  - Lorentz-contracted null
-  - 90° rotation
-  - CMB rest-frame velocity (~370 km/s)
-  - Exaggerated v = 30,000 km/s (β = 0.1)
+- Forward calc takes L_arm, n_reflections, refractive index, λ, v (full geometry input).
+- Inverse calc takes observed N ± σ_N and reports implied v ± σ_v.
+- Third card converts an SME-style Δc/c bound to a velocity bound.
+- 17-entry MMX preset table (📚 button), clickable rows apply to live panels:
+  - 1881 Michelson (Potsdam)
+  - 1887 Michelson & Morley (Cleveland)
+  - 1902-05 Morley & Miller
+  - 1925-26 Miller (Mt. Wilson)
+  - 1926 Kennedy
+  - 1927 Illingworth
+  - 1928 Piccard & Stahel
+  - 1930 Joos (Jena)
+  - 1958 Cedarholm & Townes (NH₃ masers)
+  - 1964 Jaseja, Javan, Murray, Townes (He-Ne masers)
+  - 1979 Brillet & Hall (laser)
+  - 2003 Müller et al. (cryogenic optical)
+  - 2005 Antonini et al.
+  - 2006 Stanwix et al. (sapphire microwave)
+  - 2009 Eisele et al.
+  - 2009 Herrmann et al. (rotating optical)
+  - 2015 Nagel et al. (rotating sapphire microwave)
 
 ## Layout
 
