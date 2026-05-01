@@ -79,7 +79,7 @@ header .info-btn:hover { border-color: var(--accent); color: var(--accent); }
   flex-direction: column;
 }
 #stage { flex: 1; display: block; width: 100%; height: 100%; }
-#fringes { display: block; width: 100%; height: 40px; background: #000; border-top: 1px solid var(--border); }
+#fringes { display: block; width: 100%; height: 28px; background: #000; border-top: 1px solid var(--border); }
 
 #readout {
   grid-area: readout;
@@ -122,9 +122,10 @@ header .info-btn:hover { border-color: var(--accent); color: var(--accent); }
   border-left: 1px solid var(--border);
   padding: 10px 14px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  zoom: var(--ui-zoom);
+  grid-template-columns: 1fr;
+  gap: 8px;
+  overflow-y: auto;
+  max-height: 55vh;
 }
 .calc { background: var(--panel2); border: 1px solid var(--border); border-radius: 4px; padding: 8px 10px; }
 .calc-h { color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
@@ -145,12 +146,12 @@ header .info-btn:hover { border-color: var(--accent); color: var(--accent); }
   grid-area: ctrl;
   background: var(--panel);
   border-top: 1px solid var(--border);
-  padding: 8px 14px;
-  zoom: var(--ui-zoom);
+  padding: 6px 12px;
 }
 .ctrl-row {
-  display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
-  margin-bottom: 6px;
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  margin-bottom: 4px;
+  justify-content: center;
 }
 .ctrl-row:last-child { margin-bottom: 0; }
 .ctrl-row label {
@@ -158,7 +159,8 @@ header .info-btn:hover { border-color: var(--accent); color: var(--accent); }
   font-size: 11px; color: var(--muted);
   font-family: ui-monospace, monospace;
 }
-.ctrl-row input[type="range"] { width: 130px; accent-color: var(--accent); vertical-align: middle; }
+.ctrl-row input[type="range"] { width: 110px; accent-color: var(--accent); vertical-align: middle; }
+.ctrl-row label { white-space: nowrap; }
 .ctrl-row .chk { color: var(--fg); cursor: pointer; }
 .ctrl-row .chk input { accent-color: var(--accent); }
 .pill {
