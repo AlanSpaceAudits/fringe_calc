@@ -19,6 +19,13 @@ Format:
 - **Change:** Initial single-page calculator + interferometer animation. Forward (v→N) and inverse (N→v) panels. Reference: Michelson & Morley (1887), p. 336.
 - **Revert path:** `git revert b7216e9` (initial commit).
 
+## S005 — Bottom UI rescale
+
+- **Date:** 2026-04-30
+- **Files changed:** `css/styles.css`, `change_log_serials.md`
+- **Change:** Removed `zoom: var(--ui-zoom)` from `#ctrl` and `#calcpanel` (the 1.6× scale on wide viewports was stretching the slider row across full viewport width with large gaps and orphaning the last calc card). Calc panel now stacks single-column with `overflow-y: auto; max-height: 55vh`. Slider row centered (`justify-content: center`), label whitespace locked to `nowrap`, range slider width 110 px. Fringe-strip canvas trimmed 40 px → 28 px.
+- **Revert path:** `git revert <S005 commit>`; tag `v-s000004` is the previous milestone.
+
 ## S004 — Generalized (linear) Sagnac variant, Wang 2003/2004 presets, modal close fix
 
 - **Date:** 2026-04-30
