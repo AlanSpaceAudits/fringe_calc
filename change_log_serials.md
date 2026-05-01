@@ -19,6 +19,13 @@ Format:
 - **Change:** Initial single-page calculator + interferometer animation. Forward (v→N) and inverse (N→v) panels. Reference: Michelson & Morley (1887), p. 336.
 - **Revert path:** `git revert b7216e9` (initial commit).
 
+## S004 — Generalized (linear) Sagnac variant, Wang 2003/2004 presets, modal close fix
+
+- **Date:** 2026-04-30
+- **Files changed:** `js/scenarios.js`, `js/ui.js`, `index.html`, `css/styles.css`, `change_log_serials.md`, `README.md`
+- **Change:** Added generalized Sagnac calculator card per Wang, Zheng, Yao, PRL 93, 143901 (2004): `Δφ = 4π·v·Δl·cos(θ) / (cλ)` with multi-turn factor N. New helpers `wangN`, `wangPhi`, `wangSlope` in `scenarios.js`. Three Wang presets added to Sagnac table (Wang-Langley 2003 Phys. Lett. A 312, Wang 2004 air-core, Wang 2004 glass-parallelogram 11-turn). Sagnac table now adapts to `type: 'linear'` vs `'rotational'` rows: linear rows display `Δl·N` and `v` instead of `A` and `Ω`, rotational rows unchanged. Modal foot text updated with both forms and the Stokes-theorem connection. Fixed modal not closing on row select: `.modal { display: flex }` was overriding the `hidden` attribute; added `.modal[hidden] { display: none; }` in CSS.
+- **Revert path:** `git revert <S004 commit>`; tag `v-s000003` is the previous milestone.
+
 ## S003 — Sagnac equation + presets, modal closes on row select
 
 - **Date:** 2026-04-30

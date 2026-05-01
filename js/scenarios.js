@@ -405,3 +405,71 @@ export function sagnacBeatHz(A, lam_nm, perim_m, omega_rad_s, axis_angle_deg = 0
   const projection = Math.cos((axis_angle_deg * Math.PI) / 180);
   return (4 * A * omega_rad_s * projection) / (lam * perim_m);
 }
+
+// Generalized (linear-segment) Sagnac per Wang, Zheng, Yao,
+// Phys. Rev. Lett. 93, 143901 (2004): Δφ = 4π·v·Δl·cos(θ) / (c·λ).
+// Equivalent fringe shift ΔN = Δφ/2π = 2·v·Δl·cos(θ) / (c·λ).
+// For multi-turn fibers, multiply Δl by the number of turns N.
+export function wangN(v_m_s, dl_m, n_turns, lam_nm, axis_angle_deg = 0) {
+  const lam = lam_nm * 1e-9;
+  const projection = Math.cos((axis_angle_deg * Math.PI) / 180);
+  return (2 * v_m_s * (dl_m * (n_turns || 1)) * projection) / (lam * C);
+}
+
+export function wangPhi(v_m_s, dl_m, n_turns, lam_nm, axis_angle_deg = 0) {
+  return 2 * Math.PI * wangN(v_m_s, dl_m, n_turns, lam_nm, axis_angle_deg);
+}
+
+export function wangSlope(lam_nm) {
+  return (4 * Math.PI) / (C * lam_nm * 1e-9);
+}
+
+SAGNAC_PRESETS.forEach(p => { if (!p.type) p.type = 'rotational'; });
+
+SAGNAC_PRESETS.push(
+  {
+    id: 'sag-2003-wang-langley',
+    label: 'Wang, Zheng, Yao, Langley 2003',
+    short: 'Wang 2003',
+    type: 'linear',
+    year: 2003, location: 'St. Cloud State Univ., Minnesota',
+    apparatus: 'fiber-optic conveyor (FOC) with linear-moving glass fiber segment, FOG detection',
+    A: null, perim_m: null,
+    lam_nm: 1310, axis_angle_deg: 0,
+    v_m_s: 0.25, dl_m: 1.0, n_turns: 11,
+    DN_predicted: null,
+    DN_observed: null, sigma_DN: null,
+    note: 'first observation that a linearly-moving fiber segment contributes Δφ = 4π·v·Δl/(cλ) (preliminary report)',
+    citation: 'Wang, Zheng, Yao, Langley, Phys. Lett. A 312, 7-10 (2003).'
+  },
+  {
+    id: 'sag-2004-wang-generalized',
+    label: 'Wang, Zheng, Yao 2004 — Generalized Sagnac',
+    short: 'Wang 2004',
+    type: 'linear',
+    year: 2004, location: 'St. Cloud State Univ., Minnesota',
+    apparatus: 'fiber-optic conveyor with air-core photonic-band-gap fiber, two- and three-wheel configurations',
+    A: null, perim_m: null,
+    lam_nm: 1310, axis_angle_deg: 0,
+    v_m_s: 0.211, dl_m: 4.1, n_turns: 1,
+    DN_predicted: null,
+    DN_observed: null, sigma_DN: null,
+    note: 'observed regression slope 0.0323·v·Δl rad vs predicted 4π/(cλ) = 0.0320 (1.0% agreement); independent of refractive index',
+    citation: 'Wang, Zheng, Yao, Phys. Rev. Lett. 93, 143901 (2004).'
+  },
+  {
+    id: 'sag-2004-wang-parallelogram',
+    label: 'Wang 2004 — parallelogram, glass fiber 11-turn',
+    short: 'Wang 2004 (11-turn)',
+    type: 'linear',
+    year: 2004, location: 'St. Cloud State Univ., Minnesota',
+    apparatus: 'parallelogram fiber loop, glass single-mode fiber, top arm on 1.5 m conveyor',
+    A: null, perim_m: null,
+    lam_nm: 1310, axis_angle_deg: 0,
+    v_m_s: 0.233, dl_m: 1.455, n_turns: 11,
+    DN_predicted: null,
+    DN_observed: null, sigma_DN: null,
+    note: 'multi-turn enhancement; observed slope 0.0317·v·Δl rad, predicted 0.0320 (0.9% agreement)',
+    citation: 'Wang, Zheng, Yao, Phys. Rev. Lett. 93, 143901 (2004).'
+  }
+);

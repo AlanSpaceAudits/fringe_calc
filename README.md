@@ -58,7 +58,26 @@ different formula and is provided in a separate card and modal.
   - 1993 Stedman C-II ring laser (Canterbury, NZ)
   - 2009 Schreiber et al. — G ring (Wettzell, Germany)
   - 2017 GINGERino (Gran Sasso, Italy)
+  - 2003 Wang, Zheng, Yao, Langley (linear FOC, Phys. Lett. A 312)
+  - 2004 Wang, Zheng, Yao — generalized Sagnac (PRL 93, 143901): air-core fiber
+  - 2004 Wang, Zheng, Yao — generalized Sagnac: glass-fiber parallelogram, 11 turns
   - generic fiber-optic gyro (commercial spec)
+
+## Generalized (linear-segment) Sagnac
+
+Per Wang, Zheng, Yao, *Phys. Rev. Lett.* 93, 143901 (2004), the Sagnac result
+extends to any moving waveguide segment:
+
+    Δφ  = (4π/cλ) · ∮ v·dl
+    Δφ  = 4π·v·Δl·cos(θ) / (cλ)        (single linear segment)
+    ΔN  = 2·v·Δl·cos(θ) / (cλ)
+
+For a multi-turn fiber, multiply Δl by the number of turns N. The rotational
+Sagnac result (`Δφ = 8π·A·Ω/(cλ)`) drops out via Stokes' theorem
+(`∮v·dl = 2A·Ω`).
+
+The linear-Sagnac calculator card takes v, Δl, N, θ, λ and reports ΔN, Δφ,
+and the regression slope `4π/(cλ)` (units s/m²).
 
 ## Layout
 

@@ -1,5 +1,5 @@
 import { state, physicsLive, fmt, C } from './sim.js';
-import { PRESETS, impliedV, impliedVSigma, SAGNAC_PRESETS, sagnacN, sagnacOmegaFromN, sagnacBeatHz } from './scenarios.js';
+import { PRESETS, impliedV, impliedVSigma, SAGNAC_PRESETS, sagnacN, sagnacOmegaFromN, sagnacBeatHz, wangN, wangPhi, wangSlope } from './scenarios.js';
 
 const $ = id => document.getElementById(id);
 
@@ -33,6 +33,18 @@ export function bindCalculators() {
     $('d_v').textContent = fmt(v, 4);
     $('d_beta').textContent = beta.toExponential(3);
   }
+  function gen() {
+    const v = parseFloat($('g_v').value);
+    const dl = parseFloat($('g_dl').value);
+    const N = parseFloat($('g_N').value) || 1;
+    const th = parseFloat($('g_th').value);
+    const lam = parseFloat($('g_lam').value);
+    const DN = wangN(v, dl, N, lam, th);
+    const dphi = wangPhi(v, dl, N, lam, th);
+    $('g_DN').textContent    = fmt(DN, 6);
+    $('g_dphi').textContent  = fmt(dphi, 5);
+    $('g_slope').textContent = fmt(wangSlope(lam), 4);
+  }
   function sag() {
     const A = parseFloat($('s_A').value);
     const lam = parseFloat($('s_lam').value);
@@ -55,7 +67,8 @@ export function bindCalculators() {
   ['i_D', 'i_lam', 'i_N', 'i_sN'].forEach(id => $(id).addEventListener('input', inv));
   $('d_dcc').addEventListener('input', dcc);
   ['s_A', 's_lam', 's_om', 's_th', 's_L', 's_DNobs'].forEach(id => $(id).addEventListener('input', sag));
-  fwd(); inv(); dcc(); sag();
+  ['g_v', 'g_dl', 'g_N', 'g_th', 'g_lam'].forEach(id => $(id).addEventListener('input', gen));
+  fwd(); inv(); dcc(); sag(); gen();
 }
 
 export function bindSliders() {
@@ -177,13 +190,22 @@ export function buildPresetTable() {
 }
 
 function applySagnac(p) {
-  if (p.A != null)   { $('s_A').value = p.A; }
-  if (p.lam_nm)      { $('s_lam').value = p.lam_nm; }
-  if (p.omega_rad_s != null) { $('s_om').value = p.omega_rad_s; }
-  if (p.axis_angle_deg != null) { $('s_th').value = p.axis_angle_deg; }
-  if (p.perim_m != null) { $('s_L').value = p.perim_m; }
-  if (p.DN_observed != null) { $('s_DNobs').value = p.DN_observed; }
-  $('s_A').dispatchEvent(new Event('input'));
+  if (p.type === 'linear') {
+    if (p.v_m_s != null)   $('g_v').value   = p.v_m_s;
+    if (p.dl_m != null)    $('g_dl').value  = p.dl_m;
+    if (p.n_turns != null) $('g_N').value   = p.n_turns;
+    if (p.axis_angle_deg != null) $('g_th').value = p.axis_angle_deg;
+    if (p.lam_nm) $('g_lam').value = p.lam_nm;
+    $('g_v').dispatchEvent(new Event('input'));
+  } else {
+    if (p.A != null)   $('s_A').value = p.A;
+    if (p.lam_nm)      $('s_lam').value = p.lam_nm;
+    if (p.omega_rad_s != null) $('s_om').value = p.omega_rad_s;
+    if (p.axis_angle_deg != null) $('s_th').value = p.axis_angle_deg;
+    if (p.perim_m != null) $('s_L').value = p.perim_m;
+    if (p.DN_observed != null) $('s_DNobs').value = p.DN_observed;
+    $('s_A').dispatchEvent(new Event('input'));
+  }
 }
 
 export function buildSagnacTable() {
@@ -191,25 +213,40 @@ export function buildSagnacTable() {
   SAGNAC_PRESETS.forEach(p => {
     const tr = document.createElement('tr');
     tr.dataset.id = p.id;
-    const DNpred = p.DN_predicted != null
-      ? fmt(p.DN_predicted, 5)
-      : (p.A && p.lam_nm && p.omega_rad_s != null
-          ? fmt(sagnacN(p.A, p.lam_nm, p.omega_rad_s, p.axis_angle_deg || 0), 5)
-          : '—');
+    let DNpred = '—', motionA = '—', motionL = '—', motionRate = '—', f_earth = '—';
+    if (p.type === 'linear') {
+      const DN = wangN(p.v_m_s, p.dl_m, p.n_turns || 1, p.lam_nm, p.axis_angle_deg || 0);
+      DNpred = fmt(DN, 6);
+      motionA = `Δl·N = ${(p.dl_m * (p.n_turns || 1)).toFixed(3)} m`;
+      motionL = `(${p.dl_m} m × ${p.n_turns || 1})`;
+      motionRate = `v = ${p.v_m_s} m/s`;
+    } else {
+      DNpred = p.DN_predicted != null
+        ? fmt(p.DN_predicted, 5)
+        : (p.A && p.lam_nm && p.omega_rad_s != null
+            ? fmt(sagnacN(p.A, p.lam_nm, p.omega_rad_s, p.axis_angle_deg || 0), 5)
+            : '—');
+      motionA = p.A != null ? `A = ${p.A}` : '—';
+      motionL = p.perim_m != null ? `L = ${p.perim_m}` : '—';
+      motionRate = p.omega_rad_s != null ? `Ω = ${p.omega_rad_s.toExponential(3)}` : '—';
+      f_earth = (p.A && p.lam_nm && p.perim_m && p.omega_rad_s != null)
+        ? fmt(sagnacBeatHz(p.A, p.lam_nm, p.perim_m, p.omega_rad_s, p.axis_angle_deg || 0), 3) + ' Hz'
+        : '—';
+    }
     const DNobs = p.DN_observed != null
       ? `${fmt(p.DN_observed, 5)} ± ${fmt(p.sigma_DN || 0, 5)}`
       : '—';
-    const f_earth = (p.A && p.lam_nm && p.perim_m && p.omega_rad_s != null)
-      ? fmt(sagnacBeatHz(p.A, p.lam_nm, p.perim_m, p.omega_rad_s, p.axis_angle_deg || 0), 3) + ' Hz'
-      : '—';
+    const typeBadge = p.type === 'linear'
+      ? '<span class="dim" style="color:var(--accent2)">linear</span>'
+      : '<span class="dim" style="color:var(--accent3)">rot.</span>';
     tr.innerHTML = `
-      <td>${p.year}</td>
+      <td>${p.year}<br>${typeBadge}</td>
       <td><b>${p.short || p.label}</b><br><span class="dim">${p.location || ''}</span></td>
       <td class="col-app">${p.apparatus || ''}${p.note ? '<br><span class="dim">' + p.note + '</span>' : ''}</td>
-      <td>${p.A != null ? p.A : '—'}</td>
-      <td>${p.perim_m != null ? p.perim_m : '—'}</td>
+      <td>${motionA}</td>
+      <td>${motionL}</td>
       <td>${p.lam_nm || '—'}</td>
-      <td>${p.omega_rad_s != null ? p.omega_rad_s.toExponential(3) : '—'}</td>
+      <td>${motionRate}</td>
       <td>${p.axis_angle_deg != null ? p.axis_angle_deg : '—'}</td>
       <td class="num-warn">${DNpred}</td>
       <td class="num-good">${DNobs}</td>

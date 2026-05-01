@@ -184,6 +184,7 @@ header .info-btn:hover { border-color: var(--accent); color: var(--accent); }
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
 }
+.modal[hidden] { display: none; }
 .modal-card {
   background: var(--panel);
   border: 1px solid var(--border);

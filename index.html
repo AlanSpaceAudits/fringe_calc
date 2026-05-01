@@ -79,7 +79,20 @@
       <button class="scenario" id="open-presets" style="margin-top:6px; width:100%;">📚 Open MMX preset table</button>
     </div>
     <div class="calc">
-      <div class="calc-h">Sagnac: ΔN = 4·A·Ω·cos(θ) / (λ·c)</div>
+      <div class="calc-h">Generalized Sagnac (linear): Δφ = 4π·v·Δl·cos(θ)/(c·λ)</div>
+      <label>v (m/s)  <input id="g_v"   type="number" step="0.001" value="0.211"></label>
+      <label>Δl (m)   <input id="g_dl"  type="number" step="0.01"  value="4.1"></label>
+      <label>N turns  <input id="g_N"   type="number" step="1"     value="1"></label>
+      <label>θ°       <input id="g_th"  type="number" step="1"     value="0"></label>
+      <label>λ (nm)   <input id="g_lam" type="number" step="1"     value="1310"></label>
+      <div class="calc-out">
+        ΔN = <span id="g_DN">--</span> &middot;
+        Δφ = <span id="g_dphi">--</span> rad &middot;
+        slope 4π/(c·λ) = <span id="g_slope">--</span> s/m²
+      </div>
+    </div>
+    <div class="calc">
+      <div class="calc-h">Sagnac (rotational): ΔN = 4·A·Ω·cos(θ) / (λ·c)</div>
       <label>A    <input id="s_A"   type="number" step="0.0001" value="16.0"></label>
       <label>λ    <input id="s_lam" type="number" step="1"      value="632.8"></label>
       <label>Ω    <input id="s_om"  type="number" step="1e-6"   value="7.292e-5"></label>
@@ -135,13 +148,13 @@
         <table id="sagnac-table">
           <thead>
             <tr>
-              <th>Year</th>
+              <th>Year / type</th>
               <th>Experiment</th>
               <th>Apparatus</th>
-              <th>A (m²)</th>
-              <th>L (m)</th>
+              <th>A or Δl·N</th>
+              <th>L or (Δl × N)</th>
               <th>λ (nm)</th>
-              <th>Ω (rad/s)</th>
+              <th>Ω or v</th>
               <th>θ°</th>
               <th>ΔN<sub>pred</sub></th>
               <th>ΔN<sub>obs</sub> ± σ</th>
@@ -152,10 +165,13 @@
           <tbody id="sagnac-tbody"></tbody>
         </table>
         <p class="modal-foot">
-          Sagnac equation: <code>ΔN = 4·A·Ω·cos(θ) / (λ·c)</code>;
-          <code>Δφ = 2π·ΔN</code>; <code>Δt = 4AΩ·cos(θ)/c²</code>;
-          ring-laser beat <code>Δf = 4AΩ·cos(θ) / (λ·L)</code>.
-          Sign convention: positive Ω is right-handed about the area normal.
+          Generalized form (Wang, Zheng, Yao, PRL 93, 143901 (2004)):
+          <code>Δφ = (4π/cλ) · ∮ v·dl</code>.
+          <b>Linear segment</b> with velocity <code>v</code> and length <code>Δl</code> at angle <code>θ</code>:
+          <code>Δφ = 4π·v·Δl·cos(θ) / (cλ)</code>, equivalently <code>ΔN = 2·v·Δl·cos(θ) / (cλ)</code>.
+          <b>Rotating loop</b> recovered via Stokes' theorem (<code>∮v·dl = 2A·Ω</code>):
+          <code>Δφ = 8π·A·Ω·cos(θ) / (cλ)</code>, ring-laser beat <code>Δf = 4A·Ω·cos(θ) / (λL)</code>.
+          The line-integral form is independent of the type of motion and the refractive index of the waveguide.
         </p>
       </div>
     </div>
