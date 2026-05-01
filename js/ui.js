@@ -1,5 +1,5 @@
 import { state, physicsLive, fmt, C } from './sim.js';
-import { PRESETS, impliedV, impliedVSigma, SAGNAC_PRESETS, sagnacN, sagnacOmegaFromN, sagnacBeatHz, wangN, wangPhi, wangSlope } from './scenarios.js';
+import { PRESETS, impliedV, impliedVSigma, SAGNAC_PRESETS, sagnacN, sagnacOmegaFromN, sagnacBeatHz, wangN, wangPhi, wangSlope, linearEquivV, mmxLinearEquivV, sagnacLinearEquivV } from './scenarios.js';
 
 const $ = id => document.getElementById(id);
 
@@ -164,6 +164,18 @@ export function buildPresetTable() {
       if (sigma_v && p.bound_dcc == null) v_imp_str += ` ± ${(sigma_v/1000).toFixed(2)} km/s`;
       if (p.bound_dcc != null) v_imp_str = '≤ ' + v_imp_str;
     }
+    const wang = mmxLinearEquivV(p);
+    let v_lin_str = '—';
+    if (wang) {
+      const v = wang.v;
+      let unit;
+      if (v >= 1) unit = `${v.toFixed(3)} m/s`;
+      else if (v >= 1e-3) unit = `${(v*1000).toFixed(3)} mm/s`;
+      else if (v >= 1e-6) unit = `${(v*1e6).toFixed(3)} μm/s`;
+      else if (v >= 1e-9) unit = `${(v*1e9).toFixed(3)} nm/s`;
+      else unit = `${v.toExponential(2)} m/s`;
+      v_lin_str = `${unit} <span class="dim">(${wang.src})</span>`;
+    }
     tr.innerHTML = `
       <td>${p.year}</td>
       <td><b>${p.short || p.label}</b><br><span class="dim">${p.location || ''}</span></td>
@@ -177,6 +189,7 @@ export function buildPresetTable() {
       <td class="num-good">${Nobs}</td>
       <td class="num-bound">${dcc}</td>
       <td class="num-good">${v_imp_str}</td>
+      <td class="num-bound">${v_lin_str}</td>
       <td class="col-cite">${p.citation || ''}</td>
     `;
     tr.addEventListener('click', () => {
@@ -239,6 +252,18 @@ export function buildSagnacTable() {
     const typeBadge = p.type === 'linear'
       ? '<span class="dim" style="color:var(--accent2)">linear</span>'
       : '<span class="dim" style="color:var(--accent3)">rot.</span>';
+    const sagWang = sagnacLinearEquivV(p);
+    let v_lin_str = '—';
+    if (sagWang) {
+      const v = sagWang.v;
+      let unit;
+      if (v >= 1) unit = `${v.toFixed(4)} m/s`;
+      else if (v >= 1e-3) unit = `${(v*1000).toFixed(4)} mm/s`;
+      else if (v >= 1e-6) unit = `${(v*1e6).toFixed(4)} μm/s`;
+      else if (v >= 1e-9) unit = `${(v*1e9).toFixed(4)} nm/s`;
+      else unit = `${v.toExponential(3)} m/s`;
+      v_lin_str = `${unit} <span class="dim">(${sagWang.src})</span>`;
+    }
     tr.innerHTML = `
       <td>${p.year}<br>${typeBadge}</td>
       <td><b>${p.short || p.label}</b><br><span class="dim">${p.location || ''}</span></td>
@@ -251,6 +276,7 @@ export function buildSagnacTable() {
       <td class="num-warn">${DNpred}</td>
       <td class="num-good">${DNobs}</td>
       <td class="num-bound">${f_earth}</td>
+      <td class="num-good">${v_lin_str}</td>
       <td class="col-cite">${p.citation || ''}</td>
     `;
     tr.addEventListener('click', () => {

@@ -424,6 +424,42 @@ export function wangSlope(lam_nm) {
   return (4 * Math.PI) / (C * lam_nm * 1e-9);
 }
 
+// Inverse of the linear-segment Sagnac relation:
+// given a fringe shift N and an effective moving-segment length Δl_eff,
+// return the velocity that would have produced it under the Wang
+// formulation, ΔN = 2·v·Δl/(c·λ).
+// Δl_eff convention used here:
+//   - MMX-style translational interferometers: 2·D (full round-trip path)
+//   - Rotational Sagnac loops:                 perimeter L
+//   - Linear-segment Wang experiments:         dl_m · n_turns
+export function linearEquivV(N, lam_nm, dl_eff_m) {
+  if (N == null || dl_eff_m == null || dl_eff_m <= 0) return null;
+  return (N * lam_nm * 1e-9 * C) / (2 * dl_eff_m);
+}
+
+export function mmxLinearEquivV(p) {
+  if (p.D == null || p.lam_nm == null) return null;
+  const N = p.N_observed != null ? p.N_observed : p.N_predicted;
+  if (N == null) return null;
+  return { v: linearEquivV(N, p.lam_nm, 2 * p.D), N, src: p.N_observed != null ? 'obs' : 'pred' };
+}
+
+export function sagnacLinearEquivV(p) {
+  if (p.type === 'linear') {
+    return { v: p.v_m_s, N: null, src: 'reported' };
+  }
+  if (p.perim_m == null || p.lam_nm == null) return null;
+  let N = null, src = null;
+  if (p.DN_observed != null) { N = p.DN_observed; src = 'obs'; }
+  else if (p.DN_predicted != null) { N = p.DN_predicted; src = 'pred'; }
+  else if (p.A != null && p.omega_rad_s != null) {
+    N = sagnacN(p.A, p.lam_nm, p.omega_rad_s, p.axis_angle_deg || 0);
+    src = 'pred';
+  }
+  if (N == null) return null;
+  return { v: linearEquivV(N, p.lam_nm, p.perim_m), N, src };
+}
+
 SAGNAC_PRESETS.forEach(p => { if (!p.type) p.type = 'rotational'; });
 
 SAGNAC_PRESETS.push(

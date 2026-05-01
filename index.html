@@ -159,6 +159,7 @@
               <th>ΔN<sub>pred</sub></th>
               <th>ΔN<sub>obs</sub> ± σ</th>
               <th>Δf<sub>beat</sub> @ Earth</th>
+              <th>v<sub>lin</sub> (Wang)</th>
               <th>Source</th>
             </tr>
           </thead>
@@ -172,6 +173,9 @@
           <b>Rotating loop</b> recovered via Stokes' theorem (<code>∮v·dl = 2A·Ω</code>):
           <code>Δφ = 8π·A·Ω·cos(θ) / (cλ)</code>, ring-laser beat <code>Δf = 4A·Ω·cos(θ) / (λL)</code>.
           The line-integral form is independent of the type of motion and the refractive index of the waveguide.
+          <br>
+          v<sub>lin</sub> column: <code>v = ΔN · c · λ / (2 · Δl<sub>eff</sub>)</code>, with
+          Δl<sub>eff</sub> = perimeter L for rotational rows and the reported segment v for linear rows.
         </p>
       </div>
     </div>
@@ -199,15 +203,18 @@
               <th>N<sub>obs</sub> ± σ</th>
               <th>Δc/c bound</th>
               <th>v<sub>implied</sub></th>
+              <th>v<sub>lin</sub> (Wang)</th>
               <th>Source</th>
             </tr>
           </thead>
           <tbody id="presets-tbody"></tbody>
         </table>
         <p class="modal-foot">
-          v<sub>implied</sub> from observed N: <code>v = c · √(N·λ / 2D)</code>.
+          v<sub>implied</sub> (classical MMX): <code>v = c · √(N·λ / 2D)</code>.
           From SME bound: <code>v = c · √(2·Δc/c)</code>.
-          Modern resonator experiments typically report κ̃ Lorentz-violation parameters; here Δc/c is the canonical analog of the small-β fringe-shift bound.
+          v<sub>lin</sub> (Wang generalized Sagnac): <code>v = N·c·λ / (2·Δl<sub>eff</sub>)</code>
+          with <code>Δl<sub>eff</sub> = 2·D</code> for MMX geometry (full round-trip optical path).
+          Note that the Wang formula is first-order in v/c whereas the classical MMX prediction is second-order, so the two interpretations of the same observed N yield very different v values.
         </p>
       </div>
     </div>

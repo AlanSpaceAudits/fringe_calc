@@ -19,6 +19,13 @@ Format:
 - **Change:** Initial single-page calculator + interferometer animation. Forward (v→N) and inverse (N→v) panels. Reference: Michelson & Morley (1887), p. 336.
 - **Revert path:** `git revert b7216e9` (initial commit).
 
+## S006 — Wang linear-equivalent velocity column on both tables
+
+- **Date:** 2026-05-01
+- **Files changed:** `js/scenarios.js`, `js/ui.js`, `index.html`, `change_log_serials.md`, `README.md`
+- **Change:** Added new column `v_lin (Wang)` to both the MMX and Sagnac preset tables, computed from the linear-segment Sagnac inverse `v = N·c·λ / (2·Δl_eff)`. Δl_eff convention: 2·D (full round-trip optical path) for MMX rows; perimeter L for rotational Sagnac rows; reported v for linear-Sagnac (Wang) rows. Helpers added: `linearEquivV`, `mmxLinearEquivV`, `sagnacLinearEquivV` in `scenarios.js`. Source flag "(obs)" or "(pred)" indicates whether the value came from observed or predicted N. Modal foot text updated with the conversion formula and units. Display formatting auto-selects m/s, mm/s, μm/s, or nm/s based on magnitude.
+- **Revert path:** `git revert <S006 commit>`; tag `v-s000005` is the previous milestone.
+
 ## S005 — Bottom UI rescale
 
 - **Date:** 2026-04-30
